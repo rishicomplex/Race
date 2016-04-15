@@ -3,7 +3,7 @@ from board import *
 
 HEIGHT = 27
 WIDTH = 120
-TIMEOUT = 1000
+TIMEOUT = 300
 
 def handleLeft(screen):
     (y, x) = screen.getyx()
@@ -31,6 +31,8 @@ def handleScreen(screen):
     window.keypad(True)
 
     b = Board(window, Player(1, 0))
+
+    flag = 0
     
     while 1:
         c = window.getch()
@@ -38,8 +40,24 @@ def handleScreen(screen):
         if c == ord('q'):
             break
 
-        b.render(c)
+        over = b.render(c)
+        if over == 1:
+            screen.addstr(0, 0, " You won! :)", curses.A_BLINK)
+            b.refresh()
+            flag = 1
+            break
+        elif over == 2:
+            screen.addstr(0, 0, " You crashed :(", curses.A_BLINK)
+            flag = 1
+            break
+        
         b.refresh()
+
+    if flag == 1:
+        while 1:
+            c = screen.getch()
+            if c == ord('q'):
+                break
         
 
 

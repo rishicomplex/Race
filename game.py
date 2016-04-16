@@ -7,6 +7,7 @@ from board import *
 HEIGHT = 27
 WIDTH = 120
 TIMEOUT = 300
+MY_ID = 0
 
 window_lock = threading.Lock()
 
@@ -43,7 +44,8 @@ def handleScreen(screen):
     window.keypad(True)
     window.nodelay(1)
 
-    b = Board(window, Player(1, 0))
+    me = Player(MY_ID, 0, MY_ID)
+    b = Board(window, 0, [me])
 
     ui = threading.Thread(target=runUI, args=(b, screen, ))
     ui.daemon = True
@@ -57,13 +59,13 @@ def handleScreen(screen):
             b.q.put(Event(END))
             break
         elif c == curses.KEY_LEFT:
-            b.q.put(Event(MOVE_LEFT))
+            b.q.put(Event(MOVE_LEFT, MY_ID))
         elif c == curses.KEY_RIGHT:
-            b.q.put(Event(MOVE_RIGHT))
+            b.q.put(Event(MOVE_RIGHT, MY_ID))
         elif c == curses.KEY_UP:
-            b.q.put(Event(MOVE_UP))
+            b.q.put(Event(MOVE_UP, MY_ID))
         elif c == curses.KEY_DOWN:
-            b.q.put(Event(MOVE_DOWN))
+            b.q.put(Event(MOVE_DOWN, MY_ID))
                     
 
         

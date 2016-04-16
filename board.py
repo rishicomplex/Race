@@ -1,4 +1,5 @@
 import curses
+import Queue
 import random
 import pdb
 
@@ -12,6 +13,22 @@ PLAYER = 11
 OBSTACLE = 12
 
 FINISH = 30
+
+MOVE_LEFT = 30
+MOVE_RIGHT = 31
+MOVE_UP = 32
+MOVE_DOWN = 33
+END = 40
+
+#exit_codes
+PLAYER_EXIT = 243
+CRASH = 244
+VICTORY = 245
+
+class Event:
+    def __init__(self, event_type):
+        self.event_type = event_type
+    
 
 class Obstacle:
 
@@ -34,6 +51,7 @@ class Board:
         self.me = player
         self.matrix = [[NOTHING for cell in range(5)] for row in range(5)]
         self.obstacles = [Obstacle() for index in range(10)]
+        self.q = Queue.Queue()
 
     def refresh(self):
         self.window.refresh()
@@ -57,11 +75,11 @@ class Board:
                     self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), " [=] ")
                     self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "     ")
                 elif self.matrix[row_no][cell_no] == OBSTACLE:
-                    self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "OOOOO")
-                    self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), "OOOOO")
-                    self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), "OOOOO")
-                    self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), "OOOOO")
-                    self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "OOOOO")
+                    self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "IIIII")
+                    self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), "IIIII")
+                    self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), "IIIII")
+                    self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), "IIIII")
+                    self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "IIIII")
                 else :
                     self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "     ")
                     self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), "     ")
@@ -75,23 +93,28 @@ class Board:
 
                                 
                     
-    def render(self, key):
-
-        if key == curses.KEY_LEFT:
-            if self.me.x != 0:
-                self.me.x -= 1
-        elif key == curses.KEY_RIGHT:
-            if self.me.x != 4:
-                self.me.x += 1
-        elif key == curses.KEY_UP:
-            self.me.speed += 1
-            if self.me.speed > FAST:
-                self.me.speed = FAST
-        elif key == curses.KEY_DOWN:
-            self.me.speed -= 1
-            if self.me.speed < STOPPED:
-                self.me.speed = STOPPED
-                
+    def render(self):
+        
+        while not self.q.empty():
+            e = self.q.get()
+            if e.event_type == MOVE_LEFT:
+                if self.me.x != 0:
+                    self.me.x -= 1
+            elif e.event_type == MOVE_RIGHT:
+                if self.me.x != 4:
+                    self.me.x += 1
+            elif e.event_type == MOVE_UP:
+                self.me.speed += 1
+                if self.me.speed > FAST:
+                    self.me.speed = FAST
+            elif e.event_type == MOVE_DOWN:
+                self.me.speed -= 1
+                if self.me.speed < STOPPED:
+                    self.me.speed = STOPPED
+            elif e.event_type == END:
+                return PLAYER_EXIT
+            self.q.task_done()
+            
         
         if self.me.speed == NORMAL:
             self.me.y += 1
@@ -105,7 +128,7 @@ class Board:
 
         for obstacle in self.obstacles:
             if obstacle.x == self.me.x and obstacle.y == self.me.y:
-                return 2
+                return CRASH
             if (obstacle.y - self.me.y) >= 0 and (obstacle.y - self.me.y) <= 4:
                 self.matrix[self.me.y - obstacle.y + 4][obstacle.x] = OBSTACLE
 
@@ -116,7 +139,7 @@ class Board:
         self.addBorder(31)
 
         if self.me.y >= FINISH:
-            return 1
+            return VICTORY
         
     
         

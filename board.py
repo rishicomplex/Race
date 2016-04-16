@@ -11,6 +11,7 @@ FAST = 2
 NOTHING = 10
 PLAYER = 11
 OBSTACLE = 12
+OTHER_PLAYER = 13
 
 FINISH = 30
 
@@ -78,9 +79,16 @@ class Board:
                 if self.matrix[row_no][cell_no] == PLAYER:
                     self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "     ")
                     self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), " /A\ ")
-                    self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), " [H] ")
+                    self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), " [M] ")
                     self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), " [=] ")
                     self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "     ")
+                elif self.matrix[row_no][cell_no] == OTHER_PLAYER:
+                    self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "     ")
+                    self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), " /O\ ")
+                    self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), " [O] ")
+                    self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), " [O] ")
+                    self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "     ")
+                
                 elif self.matrix[row_no][cell_no] == OBSTACLE:
                     self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "IIIII")
                     self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), "IIIII")
@@ -142,7 +150,13 @@ class Board:
 
         for player in self.players:
             #insert into board
-            pass
+            if player.id == self.me:
+                continue
+            if player.x == self.players[self.me].x and player.y == self.players[self.me].y:
+                return CRASH
+            if (player.y - self.players[self.me].y) >= 0 and (player.y - self.players[self.me].y) <= 4:
+                self.matrix[self.players[self.me].y - player.y + 4][player.x] = OTHER_PLAYER
+            
     
             
 

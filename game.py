@@ -45,7 +45,8 @@ def handleScreen(screen):
     window.nodelay(1)
 
     me = Player(MY_ID, 0, MY_ID)
-    b = Board(window, 0, [me])
+    players = [me, Player(1, 0, 1)]
+    b = Board(window, 0, players)
 
     ui = threading.Thread(target=runUI, args=(b, screen, ))
     ui.daemon = True

@@ -13,7 +13,7 @@ PLAYER = 11
 OBSTACLE = 12
 OTHER_PLAYER = 13
 
-FINISH = 100
+FINISH = 50
 
 MOVE_LEFT = 30
 MOVE_RIGHT = 31
@@ -37,12 +37,14 @@ class Event:
         self.event_type = event_type
         self.player_id = player_id
     
-
+count = 0
 class Obstacle:
 
     def __init__(self):
-        self.x = random.randint(0, 4)
-        self.y = random.randint(3, FINISH)
+        global count
+        count += 1
+        self.x = (count % 4)
+        self.y = (5 * count)
 
 class Player:
     def __init__(self, x, y, player_id):

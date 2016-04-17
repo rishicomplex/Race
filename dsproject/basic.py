@@ -83,6 +83,9 @@ class RacePeer(BTPeer):
 				b.refresh()
 			time.sleep(.2)
 
+        def comp(A, B):
+                return A[2] < B[2]
+
 	def handleScreen(self, screen):
 		curses.curs_set(0)
 		screen.addstr(0, 0, " Welcome! :)")
@@ -94,9 +97,24 @@ class RacePeer(BTPeer):
 		window.keypad(True)
 		window.nodelay(1)
 
-		me = Player(MY_ID, 0, MY_ID)
-		players = [me, Player(1, 0, 1)]
-		self.b = Board(window, 0, players)
+	        players = []
+
+
+                for pid in self.getpeerids():
+			host,port = self.getpeer(pid)
+                        self.id_tuples.append((host, port, 0))
+
+                me = -1
+                self.id_tuples = sorted(self.id_tuples, comp)
+                for ind in range(len(self.id_tuples)):
+                        self.id_tuples[2] = ind
+                        p = Player(ind, 0, ind)
+                        players.append(p)
+                        if self.id_tuples[0] == self.serverhost and self.id_tuples[1] == self.serverport:
+                                me = ind
+                                
+                self.b = Board(window, me, players)
+                
 
 		ui = threading.Thread(target=self.runUI, args=(self.b, screen, ))
 		ui.daemon = True

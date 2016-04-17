@@ -6,6 +6,7 @@ import curses
 from basic import *
 
 from Tkinter import *
+import Tkinter
 from random import *
 
 class RaceMain:
@@ -19,18 +20,12 @@ class RaceMain:
 		self.peerList = {}
 		self.updatePeerList()
 		print self.peerList
-
-
-
+		self.window = Tkinter.Tk()
 		
 		t = threading.Thread( target = self.racepeer.mainloop, args = [] )
-		t.start()
-		
+		t.start()		
 		self.racepeer.startstabilizer( self.racepeer.checklivepeers, 3 )
-
-		self.after( 3000, self.onTimer )
-
-
+		self.window.after( 3000, self.onTimer )
 
 
 	def onTimer( self ):
@@ -40,7 +35,7 @@ class RaceMain:
 			if self.racepeer.serverhost==host and self.racepeer.serverport==port:
 				self.racepeer.__sendId()
 			curses.wrapper(self.racepeer.handleScreen)
-		self.after( 3000, self.onTimer )
+		self.window.after( 3000, self.onTimer )
 		#self.after_idle( self.onTimer )
 
 

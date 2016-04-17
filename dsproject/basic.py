@@ -4,6 +4,7 @@ import Queue
 import time
 import threading
 import curses
+import sys
 
 HEIGHT = 27
 WIDTH = 120
@@ -83,8 +84,8 @@ class RacePeer(BTPeer):
 				b.refresh()
 			time.sleep(.2)
 
-        def comp(A, B):
-                return A[2] < B[2]
+	def comp(self, A, B):
+		return A[2] < B[2]
 
 	def handleScreen(self, screen):
 		curses.curs_set(0)
@@ -97,24 +98,28 @@ class RacePeer(BTPeer):
 		window.keypad(True)
 		window.nodelay(1)
 
-	        players = []
+		players = []
 
 
-                for pid in self.getpeerids():
+		for pid in self.getpeerids():
 			host,port = self.getpeer(pid)
-                        self.id_tuples.append((host, port, 0))
+			self.id_tuples.append((host, port, 0))
 
-                me = -1
-                self.id_tuples = sorted(self.id_tuples, comp)
-                for ind in range(len(self.id_tuples)):
-                        self.id_tuples[2] = ind
-                        p = Player(ind, 0, ind)
-                        players.append(p)
-                        if self.id_tuples[0] == self.serverhost and self.id_tuples[1] == self.serverport:
-                                me = ind
-                                
-                self.b = Board(window, me, players)
-                
+		me = -1
+		self.id_tuples = sorted(self.id_tuples, self.comp)
+		for ind in range(len(self.id_tuples)):
+				self.id_tuples[2] = ind
+				p = Player(ind, 0, ind)
+				players.append(p)
+				if self.id_tuples[0] == self.serverhost and self.id_tuples[1] == self.serverport:
+						me = ind
+		
+		
+		self.toast('Players : '+str(players),screen)
+		self.b = Board(window, me, players)		
+		self.toast('Players : '+str(players),screen)
+		# sleep(10)
+		# sys.exit(0);
 
 		ui = threading.Thread(target=self.runUI, args=(self.b, screen, ))
 		ui.daemon = True
@@ -128,13 +133,17 @@ class RacePeer(BTPeer):
 				self.b.q.put(Event(END))
 				break
 			elif c == curses.KEY_LEFT:
-				self.b.q.put(Event(MOVE_LEFT, MY_ID))
+				self.b.q.put(Event(MOVE_LEFT, me))
+				self.__sendtoall(MOV,'%d %d' %(MOVE_LEFT, me))
 			elif c == curses.KEY_RIGHT:
-				self.b.q.put(Event(MOVE_RIGHT, MY_ID))
+				self.b.q.put(Event(MOVE_RIGHT, me))
+				self.__sendtoall(MOV,'%d %d' %(MOVE_RIGHT, me))
 			elif c == curses.KEY_UP:
-				self.b.q.put(Event(MOVE_UP, MY_ID))
+				self.b.q.put(Event(MOVE_UP, me))
+				self.__sendtoall(MOV,'%d %d' %(MOVE_UP, me))
 			elif c == curses.KEY_DOWN:
-				self.b.q.put(Event(MOVE_DOWN, MY_ID))		
+				self.b.q.put(Event(MOVE_DOWN, me))  
+				self.__sendtoall(MOV,'%d %d' %(MOVE_DOWN, me))  
 
 	def __handle_insertpeer(self, peerconn, data):
 	
@@ -256,7 +265,7 @@ class RacePeer(BTPeer):
 						pid=peerid)
 			if len(resp) > 1:
 				resp.reverse()
-				resp.pop()	# get rid of header count reply
+				resp.pop()  # get rid of header count reply
 				while len(resp):
 					nextpid,host,port = resp.pop()[1].split()
 					if nextpid != self.myid:

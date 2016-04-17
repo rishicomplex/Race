@@ -19,18 +19,27 @@ class RaceMain:
 		self.peerList = {}
 		self.updatePeerList()
 		print self.peerList
+
+
+
 		
 		t = threading.Thread( target = self.racepeer.mainloop, args = [] )
 		t.start()
 		
 		self.racepeer.startstabilizer( self.racepeer.checklivepeers, 3 )
-		curses.wrapper(self.racepeer.handleScreen)
+
 		self.after( 3000, self.onTimer )
 
 
 
+
 	def onTimer( self ):
+		print 'Strat Game ?'
 		self.onRefresh()
+		if len( self.racepeer.getpeerids()) == 1 :
+			if self.racepeer.serverhost==host and self.racepeer.serverport==port:
+				self.racepeer.__sendId()
+			curses.wrapper(self.racepeer.handleScreen)
 		self.after( 3000, self.onTimer )
 		#self.after_idle( self.onTimer )
 

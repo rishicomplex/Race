@@ -80,7 +80,7 @@ class Board:
                     self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "     ")
                     self.window.addstr((row_no * 5) + 1, start + (cell_no * 5), " /A\ ")
                     self.window.addstr((row_no * 5) + 2, start + (cell_no * 5), " [M] ")
-                    self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), " [=] ")
+                    self.window.addstr((row_no * 5) + 3, start + (cell_no * 5), " [E] ")
                     self.window.addstr((row_no * 5) + 4, start + (cell_no * 5), "     ")
                 elif self.matrix[row_no][cell_no] == OTHER_PLAYER:
                     self.window.addstr((row_no * 5) + 0, start + (cell_no * 5), "     ")

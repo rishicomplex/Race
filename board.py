@@ -45,11 +45,11 @@ class Obstacle:
         self.y = random.randint(3, FINISH)
 
 class Player:
-    def __init__(self, x, y, id):
+    def __init__(self, x, y, player_id):
         self.x = x
         self.y = y
         self.speed = NORMAL
-        self.id = id
+        self.player_id = player_id
 
 class Board:
 
@@ -150,7 +150,7 @@ class Board:
 
         for player in self.players:
             #insert into board
-            if player.id == self.me:
+            if player.player_id == self.me:
                 continue
             if player.x == self.players[self.me].x and player.y == self.players[self.me].y:
                 return CRASH

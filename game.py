@@ -32,7 +32,7 @@ def runUI(b, screen):
                 break
             elif over == VICTORY:
                 b.refresh()
-                toast("You won! :)", screen)
+                toast("You finished! :)", screen)
                 break
             b.refresh()
         time.sleep(.2)
@@ -105,7 +105,7 @@ def runServer(user_port):
     s = socket.socket()         # Create a socket object
     host = socket.gethostname() # Get local machine name
     port = user_port                # Reserve a port for your service.
-    s.bind((host, port))        # Bind to the port
+    s.bind(('', port))        # Bind to the port
 
     s.listen(5)                 # Now wait for client connection.
     while True:

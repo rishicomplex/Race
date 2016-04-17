@@ -22,6 +22,7 @@ MOVE_DOWN = 33
 EVENT_CRASH = 34
 EVENT_FINISH = 35
 EVENT_END = 36
+EVENT_VICTORY = 37
 
 END = 40
 
@@ -31,6 +32,7 @@ END = 40
 PLAYER_EXIT = 243
 CRASH = 244
 VICTORY = 245
+LOST = 246
 
 class Event:
     def __init__(self, event_type, player_id):
@@ -130,6 +132,8 @@ class Board:
                     self.players[e.player_id].speed = STOPPED
             elif e.event_type == END:
                 return PLAYER_EXIT
+            elif e.event_type == EVENT_VICTORY:
+                return LOST
             self.q.task_done()
             
         

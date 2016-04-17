@@ -33,6 +33,11 @@ def runUI(b, screen):
             elif over == VICTORY:
                 b.refresh()
                 toast("You finished! :)", screen)
+                sendEvent(EVENT_VICTORY, MY_ID)
+                break
+            elif over == LOST:
+                b.refresh()
+                toast("You lost :(", screen)
                 break
             b.refresh()
         time.sleep(.2)
@@ -147,11 +152,12 @@ def main():
     # print "Enter other player port: "
     # port = int(raw_input())
     # other_port = port
-
+        
     print "Type 'y' to start: "
     inp = raw_input()
     if(inp == 'y'):
         curses.wrapper(handleScreen)
+    
 
 main()
 

@@ -32,6 +32,7 @@ def runUI(b, screen):
                 break
             b.refresh()
         time.sleep(.2)
+        
 
 def handleScreen(screen):
     curses.curs_set(0)
